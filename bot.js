@@ -98,26 +98,33 @@ bot.on('message', async msg => {
                     if (result.rowCount > 0) {
                         await bot.sendMessage(chatId, "Sizning shartnomalaringiz: \n" +
                             result.rows.map((row, index) => {
+                                const dateOptions = {year: 'numeric', month: 'short', day: '2-digit'};
+                                let formattedDate = new Date(row.joined_at).toLocaleDateString('en-US', dateOptions);
+
+                                const [month, day, year] = formattedDate.split(' ');
+                                formattedDate = `«${day.replace(',', '')}» ${month} ${year}`;
+
                                 return `${index + 1}. Shartnoma raqami: ${row.id}\n` +
                                     `Fan: ${row.subject}\n` +
-                                    `Status: ${row.status === null ? "Tasdiqlsh jarayonida" : row.status === true ? "Tasdiqlangan" : "Bekor qilingan\n" +
-                                        `Izoh: ${row.description || "Yo'q"}`}\n`
+                                    `Status: ${row.status === null ? "Tasdiqlash jarayonida" : row.status === true ? "Tasdiqlangan" : "Bekor qilingan\n" +
+                                        `Izoh: ${row.description || "Yo'q"}`}\n` +
+                                    `Sana: ${formattedDate}\n`;
                             }).join("\n\n") +
-                            +"Agar shartnoma bekor qilinganligi haqida ko'proq ma'lumot olish uchun @ZukkoAdmin ga murojat qiling" + "\n" +
-                            "Shartnoma nusxasini korish yoki yuklab olish uchun pasdagi shartnoma raqamini tanlang\n", {
+                            `Agar shartnoma bekor qilinganligi haqida ko'proq ma'lumot olish uchun <a href='https://t.me/ZukkoAdmin'>Adminga</a> murojaat qiling.\n` +
+                            "Shartnoma nusxasini ko'rish yoki yuklab olish uchun pastdagi shartnoma raqamini tanlang\n", {
                                 parse_mode: 'HTML',
-                                reply_markup: {
-                                    inline_keyboard: groupArrayElements(result.rows.map(row => {
+                                reply_markup: JSON.stringify({
+                                    inline_keyboard: result.rows.map(row => {
                                         return [{
                                             text: row.id,
-                                            web_app: {url: `https://zukko-academy-bot-web-6562e6a9fd84.herokuapp.com/document-pdf/${btoa(row.id)}`}
-                                        }]
-                                    }))
-                                }
+                                            web_app: {url: `https://zukko-academy-bot-web-6562e6a9fd84.herokuapp.com/document-pdf/${window.btoa(row.id)}`}
+                                        }];
+                                    })
+                                })
                             }
-                        )
+                        );
                     } else {
-                        await bot.sendMessage(chatId, "Sizda shartnomanlar mavjud emas")
+                        await bot.sendMessage(chatId, "Sizda shartnomalar mavjud emas");
                     }
                     break;
                 }

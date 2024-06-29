@@ -92,42 +92,42 @@ bot.on('message', async msg => {
                     await bot.sendMessage(chatId, "O'zingizga kerakli bo'limni tanlang", getContractBtn(chatId))
                     break
                 }
-                case "Mening shartnomalarim": {
-                    const query = "SELECT * FROM contract c where c.telegram_id = $1";
-                    const result = await pool?.query(query, [chatId]);
-                    if (result.rowCount > 0) {
-                        await bot.sendMessage(chatId, "Sizning shartnomalaringiz: \n" +
-                            result.rows.map((row, index) => {
-                                const dateOptions = {year: 'numeric', month: 'short', day: '2-digit'};
-                                let formattedDate = new Date(row.joined_at).toLocaleDateString('en-US', dateOptions);
-
-                                const [month, day, year] = formattedDate.split(' ');
-                                formattedDate = `«${day.replace(',', '')}» ${month} ${year}`;
-
-                                // const id = btoa(row.id)
-                                return `${index + 1}. Shartnoma raqami: ${row.id}\n` +
-                                    `Fan: ${row.subject}\n` +
-                                    `Status: ${row.status === null ? "Tasdiqlash jarayonida" : row.status === true ? "Tasdiqlangan" : "Bekor qilingan\n" +
-                                        `Izoh: ${row.description || "Yo'q"}`}\n` +
-                                    `Sana: ${formattedDate}`;
-                            }).join("\n\n") +
-                            `\n\nAgar shartnoma bekor qilinganligi haqida ko'proq ma'lumot olish uchun @ZukkoAdmin ga murojaat qiling.\n` +
-                            "Shartnoma nusxasini ko'rish yoki yuklab olish uchun pastdagi shartnoma raqamini tanlang\n", {
-                                reply_markup: JSON.stringify({
-                                    inline_keyboard: groupArrayElements(result.rows.map(row => {
-                                        return {
-                                            text: row.id,
-                                            web_app: {url: `https://zukko-academy-bot-web-6562e6a9fd84.herokuapp.com/document-pdf/${row.id}`}
-                                        };
-                                    }))
-                                })
-                            }
-                        );
-                    } else {
-                        await bot.sendMessage(chatId, "Sizda shartnomalar mavjud emas");
-                    }
-                    break;
-                }
+                // case "Mening shartnomalarim": {
+                //     const query = "SELECT * FROM contract c where c.telegram_id = $1";
+                //     const result = await pool?.query(query, [chatId]);
+                //     if (result.rowCount > 0) {
+                //         await bot.sendMessage(chatId, "Sizning shartnomalaringiz: \n" +
+                //             result.rows.map((row, index) => {
+                //                 const dateOptions = {year: 'numeric', month: 'short', day: '2-digit'};
+                //                 let formattedDate = new Date(row.joined_at).toLocaleDateString('en-US', dateOptions);
+                //
+                //                 const [month, day, year] = formattedDate.split(' ');
+                //                 formattedDate = `«${day.replace(',', '')}» ${month} ${year}`;
+                //
+                //                 // const id = btoa(row.id)
+                //                 return `${index + 1}. Shartnoma raqami: ${row.id}\n` +
+                //                     `Fan: ${row.subject}\n` +
+                //                     `Status: ${row.status === null ? "Tasdiqlash jarayonida" : row.status === true ? "Tasdiqlangan" : "Bekor qilingan\n" +
+                //                         `Izoh: ${row.description || "Yo'q"}`}\n` +
+                //                     `Sana: ${formattedDate}`;
+                //             }).join("\n\n") +
+                //             `\n\nAgar shartnoma bekor qilinganligi haqida ko'proq ma'lumot olish uchun @ZukkoAdmin ga murojaat qiling.\n` +
+                //             "Shartnoma nusxasini ko'rish yoki yuklab olish uchun pastdagi shartnoma raqamini tanlang\n", {
+                //                 reply_markup: JSON.stringify({
+                //                     inline_keyboard: groupArrayElements(result.rows.map(row => {
+                //                         return {
+                //                             text: row.id,
+                //                             web_app: {url: `https://zukko-academy-bot-web-6562e6a9fd84.herokuapp.com/document-pdf/${row.id}`}
+                //                         };
+                //                     }))
+                //                 })
+                //             }
+                //         );
+                //     } else {
+                //         await bot.sendMessage(chatId, "Sizda shartnomalar mavjud emas");
+                //     }
+                //     break;
+                // }
                 default: {
                     await bot.sendMessage(chatId, "Kechirasiz siz mavjud bo'lmagan buyruq kiritmoqdasiz")
                 }
@@ -260,9 +260,9 @@ const getContractBtn = (chatId) => {
                         web_app: {url: "https://zukko-academy-bot-web-6562e6a9fd84.herokuapp.com/document-form/" + chatId}
                     },
                 ],
-                [
-                    {text: "Mening shartnomalarim"}
-                ],
+                // [
+                //     {text: "Mening shartnomalarim"}
+                // ],
                 [
                     {text: "Orqaga"}
                 ]

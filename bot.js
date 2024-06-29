@@ -21,7 +21,7 @@ app.get('/', (req, res) => {
 app.post('/contract', async (req, res) => {
     try {
         const {chatId, fullName, address, phone, subject, signature, passport} = req.body; // JSON tahlil qilish
-        const query = "INSERT INTO contracts (telegram_id, full_name, address, subject, phone, signature, passport) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *";
+        const query = "INSERT INTO contract (telegram_id, full_name, address, subject, phone, signature, passport) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *";
 
         let newContract = await pool.query(query, [chatId, fullName, address, subject, phone, signature, passport]);
 

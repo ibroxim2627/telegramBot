@@ -92,6 +92,35 @@ bot.on('message', async msg => {
                     await bot.sendMessage(chatId, "O'zingizga kerakli bo'limni tanlang", getContractBtn(chatId))
                     break
                 }
+                case "Mening shartnomalarim": {
+                    const query = "SELECT * FROM contract c where c.telegram_id = $1";
+                    const result = await pool?.query(query, [chatId]);
+                    if (result.rowCount > 0) {
+                        await bot.sendMessage(chatId, "Sizning shartnomalaringiz: \n" +
+                            result.rows.map((row, index) => {
+                                return `${index + 1}. Shartnoma raqami: ${row.id}\n` +
+                                    `Fan: ${row.subject}\n` +
+                                    `Status: ${row.status === null ? "Tasdiqlsh jarayonida" : row.status === true ? "Tasdiqlangan" : "Bekor qilingan\n" +
+                                        `Izoh: ${row.description || "Yo'q"}`}\n`
+                            }).join("\n\n") +
+                            +"Agar shartnoma bekor qilinganligi haqida ko'proq ma'lumot olish uchun <a href='https://t.me/ZukkoAdmin'> Adminga </a> murojat qiling" + "\n" +
+                            "Shartnoma nusxasini korish yoki yuklab olish uchun pasdagi shartnoma raqamini tanlang\n", {
+                                parse_mode: 'HTML',
+                                reply_markup: {
+                                    inline_keyboard: groupArrayElements(result.rows.map(row => {
+                                        return [{
+                                            text: row.id,
+                                            web_app: {url: `https://zukko-academy-bot-web-6562e6a9fd84.herokuapp.com/document-pdf/${btoa(row.id)}`}
+                                        }]
+                                    }))
+                                }
+                            }
+                        )
+                    } else {
+                        await bot.sendMessage(chatId, "Sizda shartnomanlar mavjud emas")
+                    }
+                    break;
+                }
                 default: {
                     await bot.sendMessage(chatId, "Kechirasiz siz mavjud bo'lmagan buyruq kiritmoqdasiz")
                 }
@@ -235,6 +264,13 @@ const getContractBtn = (chatId) => {
     }
 }
 
+function groupArrayElements(arr) {
+    let result = [];
+    for (let i = 0; i < arr.length; i += 3) {
+        result.push(arr.slice(i, i + 3));
+    }
+    return result;
+}
 
 app.get('/', (req, res) => {
     res.send('Server is running...');
@@ -242,7 +278,7 @@ app.get('/', (req, res) => {
 
 app.post('/contract', async (req, res) => {
     try {
-        const {chatId, fullName, address, phone, subject, signature, passport} = req.body; // JSON tahlil qilish
+        const {chatId, fullName, address, phone, subject, signature, passport} = req.body;
         const query = "INSERT INTO contract (telegram_id, full_name, address, subject, phone, signature, passport) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *";
 
         let newContract = await pool.query(query, [chatId, fullName, address, subject, phone, signature, passport]);
@@ -262,6 +298,17 @@ app.post('/contract', async (req, res) => {
         res.status(500).json({message: 'Error saving contract'});
     }
 });
+
+app.get('/contract', async (req, res) => {
+    const contractId = req?.query?.contractId
+    const query = "SELECT * FROM contract c where c.id = $1";
+    const result = await pool?.query(query, [contractId]);
+    if (result.rowCount > 0) {
+        res.status(200).json(result.rows[0]);
+    } else {
+        res.status(404).json({message: 'Contract not found'})
+    }
+})
 
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {

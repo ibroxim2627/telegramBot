@@ -243,12 +243,12 @@ const getContractBtn = (chatId) => {
             resize_keyboard: true,
             keyboard: [
                 [
-                    {text: "Shartnoma shartlari", web_app: {url: "https://668d-82-215-99-145.ngrok-free.app/conditions"}},
+                    {text: "Shartnoma shartlari", web_app: {url: "https://zukko-academy-bot-web-6562e6a9fd84.herokuapp.com/conditions"}},
                 ],
                 [
                     {
                         text: "Shartnoma tuzishga ariza topshirish",
-                        web_app: {url: "https://668d-82-215-99-145.ngrok-free.app/document-form/" + chatId}
+                        web_app: {url: "https://zukko-academy-bot-web-6562e6a9fd84.herokuapp.com/document-form/" + chatId}
                     },
                 ],
                 [

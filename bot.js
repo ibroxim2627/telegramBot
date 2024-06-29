@@ -11,8 +11,6 @@ const {
 } = require("./botOptions");
 
 const app = express();
-const port = process.env.PORT || 8000;
-
 app.use(bodyParser.json());
 app.use(cors());
 
@@ -21,11 +19,12 @@ app.get('/', (req, res) => {
 })
 
 app.post('/contract', async (req, res) => {
-    console.log(req)
-    const {chatId, fullName, address, phone, subject, signature, passport} = JSON.parse(req.body);
-    const query = "INSERT INTO contracts (telegram_id, full_name, address, subject, phone, signature, passport) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *";
     try {
+        const {chatId, fullName, address, phone, subject, signature, passport} = req.body; // JSON tahlil qilish
+        const query = "INSERT INTO contracts (telegram_id, full_name, address, subject, phone, signature, passport) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *";
+
         let newContract = await pool.query(query, [chatId, fullName, address, subject, phone, signature, passport]);
+
         res.status(200).json({message: 'Contract saved successfully'});
         bot.sendMessage(chatId, "Sizning arizangiz qabul qilindi." +
             "Ariza ma'lumotlari: \n" +
@@ -40,10 +39,11 @@ app.post('/contract', async (req, res) => {
         console.error(err);
         res.status(500).json({message: 'Error saving contract'});
     }
-})
+});
 
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
+const PORT = process.env.PORT || 8000;
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 });
 
 const token = '6331159759:AAFN6_9rdAwdXOe7SlgrowEaJ2bCFeJSpEg';

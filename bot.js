@@ -110,7 +110,7 @@ bot.on('message', async msg => {
                                     `Status: ${row.status === null ? "Tasdiqlash jarayonida" : row.status === true ? "Tasdiqlangan" : "Bekor qilingan\n" +
                                         `Izoh: ${row.description || "Yo'q"}`}\n` +
                                     `Sana: ${formattedDate}`;
-                            }).join("\n") +
+                            }).join("\n\n") +
                             `\n\nAgar shartnoma bekor qilinganligi haqida ko'proq ma'lumot olish uchun @ZukkoAdmin ga murojaat qiling.\n` +
                             "Shartnoma nusxasini ko'rish yoki yuklab olish uchun pastdagi shartnoma raqamini tanlang\n", {
                                 reply_markup: JSON.stringify({

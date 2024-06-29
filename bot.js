@@ -91,7 +91,7 @@ bot.on('message', async msg => {
                     break
                 }
                 case "Matematika": {
-                    const photoPath = path.join(__dirname, '../dist/Zakiy.jpg');
+                    const photoPath = path.join(__dirname, './Zakiy.jpg');
                     await bot.sendPhoto(chatId, photoPath, {...mathContent, ...infoContentBtn})
                     break;
                 }

@@ -14,38 +14,6 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 
-app.get('/', (req, res) => {
-    res.send('Server is running...');
-})
-
-app.post('/contract', async (req, res) => {
-    try {
-        const {chatId, fullName, address, phone, subject, signature, passport} = req.body; // JSON tahlil qilish
-        const query = "INSERT INTO contract (telegram_id, full_name, address, subject, phone, signature, passport) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *";
-
-        let newContract = await pool.query(query, [chatId, fullName, address, subject, phone, signature, passport]);
-
-        res.status(200).json({message: 'Contract saved successfully'});
-        bot.sendMessage(chatId, "Sizning arizangiz qabul qilindi." +
-            "Ariza ma'lumotlari: \n" +
-            "Shartnoma raqami: " + newContract.id + "\n" +
-            "F.I.O: " + fullName + "\n" +
-            "Manzil: " + address + "\n" +
-            "Telefon raqam: " + phone + "\n" +
-            "Passport: " + passport + "\n" +
-            "Sana: " + newContract?.joined_at + "\n"
-        )
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({message: 'Error saving contract'});
-    }
-});
-
-const PORT = process.env.PORT || 8000;
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
-
 const token = '6331159759:AAFN6_9rdAwdXOe7SlgrowEaJ2bCFeJSpEg';
 const bot = new TelegramBot(token, {polling: true});
 
@@ -54,7 +22,7 @@ const channels = ['-1002170742320'];
 let userMessages = {};
 
 bot.setMyCommands([
-    {command: '/start', description: 'Bosh menyu'}
+    {command: '/start', description: 'Bosh menyu'},
 ]);
 
 bot.on('message', async msg => {
@@ -91,33 +59,26 @@ bot.on('message', async msg => {
                     break
                 }
                 case "Matematika": {
-                    const photoPath = path.join(__dirname, './Zakiy.jpg');
-                    await bot.sendPhoto(chatId, photoPath, {...mathContent, ...infoContentBtn})
+                    await sendCourseContentMessage(chatId, mathContent)
                     break;
                 }
                 case "Ingliz tili": {
-                    const photoPath = path.join(__dirname, './Zakiy.jpg');
-                    await bot.sendPhoto(chatId, photoPath, {...englishContent, ...infoContentBtn})
+                    await sendCourseContentMessage(chatId, englishContent)
                     break;
                 }
                 case "Rus tili": {
-                    const photoPath = path.join(__dirname, './Zakiy.jpg');
-                    await bot.sendPhoto(chatId, photoPath, {...russianContent, ...infoContentBtn})
+                    await sendCourseContentMessage(chatId, russianContent)
                     break;
                 }
                 case "IT": {
-                    const photoPath = path.join(__dirname, './Zakiy.jpg');
-                    await bot.sendPhoto(chatId, photoPath, {...ITcontent, ...infoContentBtn})
+                    await sendCourseContentMessage(chatId, ITcontent)
                     break;
                 }
                 case "Arab tili": {
-                    const photoPath = path.join(__dirname, './Zakiy.jpg');
-                    await bot.sendPhoto(chatId, photoPath, {...arabContent, ...infoContentBtn})
-                    break;
+                    await sendCourseContentMessage(chatId, arabContent)
                 }
                 case "Arab tili kids": {
-                    const photoPath = path.join(__dirname, './Zakiy.jpg');
-                    await bot.sendPhoto(chatId, photoPath, {...arabKidsContent, ...infoContentBtn})
+                    await sendCourseContentMessage(chatId, arabKidsContent)
                     break;
                 }
                 case "🤝 Bog'lanish": {
@@ -237,13 +198,25 @@ const checkJoinChannels = async (chatId, userId, start = false, messageId = null
     return isMemberOfAllChannels
 };
 
+const sendCourseContentMessage = async (chatId, courseContent) => {
+    const message = await bot.sendMessage(chatId, "✍️ ... ...")
+    const photoPath = path.join(__dirname, './Zakiy.jpg');
+    await bot.sendPhoto(chatId, photoPath, {...courseContent, ...infoContentBtn})
+        .then(() => {
+            bot.deleteMessage(chatId, message.message_id)
+        })
+}
+
 const getContractBtn = (chatId) => {
     return {
         reply_markup: {
             resize_keyboard: true,
             keyboard: [
                 [
-                    {text: "Shartnoma shartlari", web_app: {url: "https://zukko-academy-bot-web-6562e6a9fd84.herokuapp.com/conditions"}},
+                    {
+                        text: "Shartnoma shartlari",
+                        web_app: {url: "https://zukko-academy-bot-web-6562e6a9fd84.herokuapp.com/conditions"}
+                    },
                 ],
                 [
                     {
@@ -261,3 +234,36 @@ const getContractBtn = (chatId) => {
         }
     }
 }
+
+
+app.get('/', (req, res) => {
+    res.send('Server is running...');
+})
+
+app.post('/contract', async (req, res) => {
+    try {
+        const {chatId, fullName, address, phone, subject, signature, passport} = req.body; // JSON tahlil qilish
+        const query = "INSERT INTO contract (telegram_id, full_name, address, subject, phone, signature, passport) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *";
+
+        let newContract = await pool.query(query, [chatId, fullName, address, subject, phone, signature, passport]);
+        newContract = newContract.rows[0];
+        res.status(200).json({message: 'Contract saved successfully'});
+        bot.sendMessage(chatId, "Sizning arizangiz qabul qilindi." +
+            "Ariza ma'lumotlari: \n" +
+            "Shartnoma raqami: " + newContract.id + "\n" +
+            "F.I.O: " + fullName + "\n" +
+            "Manzil: " + address + "\n" +
+            "Telefon raqam: " + phone + "\n" +
+            "Passport: " + passport + "\n" +
+            "Sana: " + newContract?.joined_at + "\n"
+        )
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({message: 'Error saving contract'});
+    }
+});
+
+const PORT = process.env.PORT || 8000;
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});

@@ -103,7 +103,7 @@ bot.on('message', async msg => {
                                     `Status: ${row.status === null ? "Tasdiqlsh jarayonida" : row.status === true ? "Tasdiqlangan" : "Bekor qilingan\n" +
                                         `Izoh: ${row.description || "Yo'q"}`}\n`
                             }).join("\n\n") +
-                            +"Agar shartnoma bekor qilinganligi haqida ko'proq ma'lumot olish uchun <a href='https://t.me/ZukkoAdmin'> Adminga </a> murojat qiling" + "\n" +
+                            +"Agar shartnoma bekor qilinganligi haqida ko'proq ma'lumot olish uchun @ZukkoAdmin ga murojat qiling" + "\n" +
                             "Shartnoma nusxasini korish yoki yuklab olish uchun pasdagi shartnoma raqamini tanlang\n", {
                                 parse_mode: 'HTML',
                                 reply_markup: {
@@ -228,7 +228,7 @@ const checkJoinChannels = async (chatId, userId, start = false, messageId = null
 };
 
 const sendCourseContentMessage = async (chatId, courseContent) => {
-    const message = await bot.sendMessage(chatId, "✍️ ... ...")
+    const message = await bot.sendMessage(chatId, "... ✍️")
     const photoPath = path.join(__dirname, './Zakiy.jpg');
     await bot.sendPhoto(chatId, photoPath, {...courseContent, ...infoContentBtn})
         .then(() => {
@@ -284,14 +284,18 @@ app.post('/contract', async (req, res) => {
         let newContract = await pool.query(query, [chatId, fullName, address, subject, phone, signature, passport]);
         newContract = newContract.rows[0];
         res.status(200).json({message: 'Contract saved successfully'});
-        bot.sendMessage(chatId, "Sizning arizangiz qabul qilindi." +
+
+        const dateOptions = { year: 'numeric', month: 'short', day: '2-digit' };
+        const formattedDate = new Date(newContract.joined_at).toLocaleDateString('uz-UZ', dateOptions).replace('.', '').replace('.', '');
+
+        bot.sendMessage(chatId, "Sizning arizangiz qabul qilindi.\n" +
             "Ariza ma'lumotlari: \n" +
             "Shartnoma raqami: " + newContract.id + "\n" +
             "F.I.O: " + fullName + "\n" +
             "Manzil: " + address + "\n" +
             "Telefon raqam: " + phone + "\n" +
             "Passport: " + passport + "\n" +
-            "Sana: " + newContract?.joined_at + "\n"
+            "Sana: " + formattedDate + "\n"
         )
     } catch (err) {
         console.error(err);

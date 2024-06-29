@@ -115,10 +115,10 @@ bot.on('message', async msg => {
                             "Shartnoma nusxasini ko'rish yoki yuklab olish uchun pastdagi shartnoma raqamini tanlang\n", {
                                 reply_markup: JSON.stringify({
                                     inline_keyboard: groupArrayElements(result.rows.map(row => {
-                                        return [{
+                                        return {
                                             text: row.id,
                                             web_app: {url: `https://zukko-academy-bot-web-6562e6a9fd84.herokuapp.com/document-pdf/${row.id}`}
-                                        }];
+                                        };
                                     }))
                                 })
                             }

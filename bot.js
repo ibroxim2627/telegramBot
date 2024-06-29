@@ -104,20 +104,21 @@ bot.on('message', async msg => {
                                 const [month, day, year] = formattedDate.split(' ');
                                 formattedDate = `«${day.replace(',', '')}» ${month} ${year}`;
 
+                                // const id = btoa(row.id)
                                 return `${index + 1}. Shartnoma raqami: ${row.id}\n` +
                                     `Fan: ${row.subject}\n` +
                                     `Status: ${row.status === null ? "Tasdiqlash jarayonida" : row.status === true ? "Tasdiqlangan" : "Bekor qilingan\n" +
                                         `Izoh: ${row.description || "Yo'q"}`}\n` +
                                     `Sana: ${formattedDate}\n`;
                             }).join("\n\n") +
-                            `Agar shartnoma bekor qilinganligi haqida ko'proq ma'lumot olish uchun <a href='https://t.me/ZukkoAdmin'>Adminga</a> murojaat qiling.\n` +
+                            `Agar shartnoma bekor qilinganligi haqida ko'proq ma'lumot olish uchun @ZukkoAdmin ga murojaat qiling.\n` +
                             "Shartnoma nusxasini ko'rish yoki yuklab olish uchun pastdagi shartnoma raqamini tanlang\n", {
                                 parse_mode: 'HTML',
                                 reply_markup: JSON.stringify({
                                     inline_keyboard: result.rows.map(row => {
                                         return [{
                                             text: row.id,
-                                            web_app: {url: `https://zukko-academy-bot-web-6562e6a9fd84.herokuapp.com/document-pdf/${window.btoa(row.id)}`}
+                                            web_app: {url: `https://zukko-academy-bot-web-6562e6a9fd84.herokuapp.com/document-pdf/${row.id}`}
                                         }];
                                     })
                                 })

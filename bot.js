@@ -3,6 +3,9 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const path = require('path')
+const multer = require('multer');
+const axios = require('axios');
+const fs = require('fs');
 const pool = require('./db');
 
 const {
@@ -20,6 +23,8 @@ const bot = new TelegramBot(token, {polling: true});
 const channels = ['-1002170742320'];
 
 let userMessages = {};
+
+const upload = multer({ dest: 'uploads/' });
 
 bot.setMyCommands([
     {command: '/start', description: 'Bosh menyu'},
@@ -320,6 +325,42 @@ app.get('/contract', async (req, res) => {
         res.status(404).json({message: 'Contract not found'})
     }
 })
+
+app.get('/contracts', async (req, res) => {
+    const query = "SELECT c.id, c.telegram_id, c.full_name, c.address, c.subject, c.phone, c.passport, c.joined_at, c.status FROM contract c";
+    const result = await pool?.query(query);
+    if (result.rowCount > 0) {
+        res.status(200).json(result.rows);
+    } else {
+        res.status(404).json({message: 'Contracts not found'})
+    }
+})
+
+app.post('/upload', upload.single('file'), (req, res) => {
+    const chatId = req?.query?.chatId
+    const file = req.file;
+    if (!file) {
+        return res.status(400).send('Hech qanday fayl yuklanmadi.');
+    }
+
+    const url = `https://api.telegram.org/bot${token}/sendDocument`;
+    const formData = new FormData();
+    formData.append('chat_id', chatId);
+    formData.append('document', fs.createReadStream(file.path));
+
+    axios.post(url, formData, {
+        headers: formData?.getHeaders()
+    })
+        .then(response => {
+            console.log('Telegramga yuborildi:', response.data);
+            res.send('PDF fayl muvaffaqiyatli yuborildi.');
+        })
+        .catch(error => {
+            console.error('Telegramga yuborishda xatolik yuz berdi:', error);
+            res.status(500).send('Telegramga yuborishda xatolik yuz berdi.');
+        });
+});
+
 
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {

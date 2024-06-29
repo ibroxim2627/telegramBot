@@ -109,17 +109,17 @@ bot.on('message', async msg => {
                                     `Fan: ${row.subject}\n` +
                                     `Status: ${row.status === null ? "Tasdiqlash jarayonida" : row.status === true ? "Tasdiqlangan" : "Bekor qilingan\n" +
                                         `Izoh: ${row.description || "Yo'q"}`}\n` +
-                                    `Sana: ${formattedDate}\n\n`;
-                            }) +
+                                    `Sana: ${formattedDate}`;
+                            }).join("\n") +
                             `\n\nAgar shartnoma bekor qilinganligi haqida ko'proq ma'lumot olish uchun @ZukkoAdmin ga murojaat qiling.\n` +
                             "Shartnoma nusxasini ko'rish yoki yuklab olish uchun pastdagi shartnoma raqamini tanlang\n", {
                                 reply_markup: JSON.stringify({
-                                    inline_keyboard: result.rows.map(row => {
+                                    inline_keyboard: groupArrayElements(result.rows.map(row => {
                                         return [{
                                             text: row.id,
                                             web_app: {url: `https://zukko-academy-bot-web-6562e6a9fd84.herokuapp.com/document-pdf/${row.id}`}
                                         }];
-                                    })
+                                    }))
                                 })
                             }
                         );

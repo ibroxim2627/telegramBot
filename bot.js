@@ -6,6 +6,7 @@ const path = require('path')
 const multer = require('multer');
 const axios = require('axios');
 const fs = require('fs');
+const FormData = require('form-data');
 const pool = require('./db');
 
 const {

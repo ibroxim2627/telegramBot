@@ -338,8 +338,13 @@ app.get('/contracts', async (req, res) => {
 })
 
 app.post('/upload', upload.single('file'), (req, res) => {
-    const chatId = req?.query?.chatId
+    const chatId = req?.query?.chatId;
     const file = req.file;
+
+    if (!chatId) {
+        return res.status(400).send('chatId mavjud emas.');
+    }
+
     if (!file) {
         return res.status(400).send('Hech qanday fayl yuklanmadi.');
     }
@@ -350,7 +355,7 @@ app.post('/upload', upload.single('file'), (req, res) => {
     formData.append('document', fs.createReadStream(file.path));
 
     axios.post(url, formData, {
-        headers: formData?.getHeaders()
+        headers: formData.getHeaders()
     })
         .then(response => {
             console.log('Telegramga yuborildi:', response.data);

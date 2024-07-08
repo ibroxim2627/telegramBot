@@ -25,7 +25,7 @@ const channels = ['-1002170742320'];
 
 let userMessages = {};
 
-const upload = multer({ dest: 'uploads/' });
+const upload = multer({dest: 'uploads/'});
 
 bot.setMyCommands([
     {command: '/start', description: 'Bosh menyu'},
@@ -298,7 +298,7 @@ app.post('/contract', async (req, res) => {
         newContract = newContract.rows[0];
         res.status(200).json({message: 'Contract saved successfully'});
 
-        const dateOptions = { year: 'numeric', month: 'short', day: '2-digit' };
+        const dateOptions = {year: 'numeric', month: 'short', day: '2-digit'};
         const formattedDate = new Date(newContract.joined_at).toLocaleDateString('uz-UZ', dateOptions).replace('.', '').replace('.', '');
 
         bot.sendMessage(chatId, "Sizning arizangiz qabul qilindi.\n" +
@@ -337,41 +337,66 @@ app.get('/contracts', async (req, res) => {
     }
 })
 
-app.post('/upload', upload.single('file'), (req, res) => {
-    const chatId = req?.query?.chatId;
-    const file = req.file;
 
-    if (!chatId) {
-        return res.status(400).send('chatId mavjud emas.');
+app.post('/upload', upload.single('file'), async (req, res) => {
+    const chatId = req?.query?.chatId;
+    const groupId = -1001743441861; // Telegram guruh ID
+    const file = req.file;
+    const {id, full_name, address, subject, phone, passport, joined_at} = req.body;
+
+    if (!chatId || !groupId) {
+        return res.status(400).send('chatId yoki groupId mavjud emas.');
     }
 
     if (!file) {
         return res.status(400).send('Hech qanday fayl yuklanmadi.');
     }
 
-    // Fayl nomini kengaytmasi bilan tekshiring
-    if (!file.originalname.endsWith('.pdf')) {
-        return res.status(400).send('Fayl PDF formatda emas.');
+    // Contract ID bo'yicha ma'lumotlarni yangilash
+    try {
+        const updateQuery = 'UPDATE contract SET status = true WHERE id = $1';
+        await pool?.query(updateQuery, [id]);
+        console.log('Contract status updated to true');
+
+        const url = `https://api.telegram.org/bot${token}/sendDocument`;
+
+        const caption = `
+        ID: ${chatId}\n
+        Contract ID: ${id}\n
+        Full Name: ${full_name}\n
+        Address: ${address}\n
+        Subject: #${subject}\n
+        Phone: ${phone}\n
+        Passport: ${passport}\n
+        Joined At: ${joined_at}\n
+        `;
+
+        const sendToChat = (id) => {
+            const formDataForChat = new FormData();
+            formDataForChat.append('chat_id', id);
+            formDataForChat.append('document', fs.createReadStream(file.path), 'shartnoma.pdf');
+            formDataForChat.append('caption', caption);
+
+            return axios.post(url, formDataForChat, {
+                headers: formDataForChat.getHeaders()
+            });
+        };
+
+        // Barcha chatlarga yuborish
+        Promise.all([sendToChat(chatId), sendToChat(groupId)])
+            .then(responses => {
+                console.log('Telegramga yuborildi:', responses.map(r => r.data));
+                res.send('PDF fayl muvaffaqiyatli yuborildi.');
+            })
+            .catch(error => {
+                console.error('Telegramga yuborishda xatolik yuz berdi:', error);
+                res.status(500).send('Telegramga yuborishda xatolik yuz berdi.');
+            });
+    } catch (error) {
+        console.error('Database error:', error);
+        return res.status(500).send('Database error');
     }
-
-    const url = `https://api.telegram.org/bot${token}/sendDocument`;
-    const formData = new FormData();
-    formData.append('chat_id', chatId);
-    formData.append('document', fs.createReadStream(file.path), 'shartnoma.pdf');
-
-    axios.post(url, formData, {
-        headers: formData.getHeaders()
-    })
-        .then(response => {
-            console.log('Telegramga yuborildi:', response.data);
-            res.send('PDF fayl muvaffaqiyatli yuborildi.');
-        })
-        .catch(error => {
-            console.error('Telegramga yuborishda xatolik yuz berdi:', error);
-            res.status(500).send('Telegramga yuborishda xatolik yuz berdi.');
-        });
 });
-
 
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {

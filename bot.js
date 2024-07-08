@@ -349,10 +349,15 @@ app.post('/upload', upload.single('file'), (req, res) => {
         return res.status(400).send('Hech qanday fayl yuklanmadi.');
     }
 
+    // Fayl nomini kengaytmasi bilan tekshiring
+    if (!file.originalname.endsWith('.pdf')) {
+        return res.status(400).send('Fayl PDF formatda emas.');
+    }
+
     const url = `https://api.telegram.org/bot${token}/sendDocument`;
     const formData = new FormData();
     formData.append('chat_id', chatId);
-    formData.append('document', fs.createReadStream(file.path));
+    formData.append('document', fs.createReadStream(file.path), 'shartnoma.pdf');
 
     axios.post(url, formData, {
         headers: formData.getHeaders()

@@ -338,9 +338,10 @@ app.get('/contracts', async (req, res) => {
 })
 
 app.post('/cancellation', async (req, res) => {
-    const {contractId, description} = req.body;
+    const {contractId, description, chatId} = req.body;
     const query = "UPDATE contract SET status = false, description = $1 WHERE id = $2";
     await pool?.query(query, [description, contractId]);
+    await bot.sendMessage(chatId, `Sizning shartnoma raqami: ${contractId} bo'lgan arizangiz, ${description} sababli bekor qilindi.\n Iltimos, qayta urinib ko'ring.\n Savol yoki xatolik bo'lgan bo'lsa @IbroximTolibjonovich2627 ga murojaat qiling.`);
     res.status(200).json({message: 'Contract canceled successfully'});
 })
 

@@ -301,14 +301,15 @@ app.post('/contract', async (req, res) => {
         const dateOptions = {year: 'numeric', month: 'short', day: '2-digit'};
         const formattedDate = new Date(newContract.joined_at).toLocaleDateString('uz-UZ', dateOptions).replace('.', '').replace('.', '');
 
-        bot.sendMessage(chatId, "Sizning arizangiz qabul qilindi.\n" +
+        await bot.sendMessage(chatId, "Sizning arizangiz qabul qilindi.\n" +
             "Ariza ma'lumotlari: \n" +
             "Shartnoma raqami: " + newContract.id + "\n" +
             "F.I.Sh: " + fullName + "\n" +
             "Manzil: " + address + "\n" +
             "Telefon raqam: " + phone + "\n" +
             "Passport: " + passport + "\n" +
-            "Sana: " + formattedDate + "\n"
+            "Sana: " + formattedDate + "\n" +
+            "Arizangiz tasdiqlanishi bilan shartnoma namunasini sizga yuboramiz.\n"
         )
     } catch (err) {
         console.error(err);
@@ -341,7 +342,7 @@ app.post('/cancellation', async (req, res) => {
     const {contractId, description, chatId} = req.body;
     const query = "UPDATE contract SET status = false, description = $1 WHERE id = $2";
     await pool?.query(query, [description, contractId]);
-    await bot.sendMessage(chatId, `Sizning shartnoma raqami: ${contractId} bo'lgan arizangiz, ${description} sababli bekor qilindi.\n Iltimos, qayta urinib ko'ring.\n Savol yoki xatolik bo'lgan bo'lsa @IbroximTolibjonovich2627 ga murojaat qiling.`);
+    await bot.sendMessage(chatId, `Sizning shartnoma raqami: ${contractId} bo'lgan arizangiz, ${description} sababli bekor qilindi.\nIltimos, qayta urinib ko'ring.\nSavol yoki xatolik bo'lgan bo'lsa @IbroximTolibjonovich2627 ga murojaat qiling.`);
     res.status(200).json({message: 'Contract canceled successfully'});
 })
 

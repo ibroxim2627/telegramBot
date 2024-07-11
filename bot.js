@@ -337,6 +337,19 @@ app.get('/contracts', async (req, res) => {
     }
 })
 
+app.post('/cancellation', async (req, res) => {
+    const {contractId, description} = req.body;
+    const query = "UPDATE contract SET status = false, description = $1 WHERE id = $2";
+    await pool?.query(query, [description, contractId]);
+    res.status(200).json({message: 'Contract canceled successfully'});
+})
+
+app.post('/change-description', async (req, res) => {
+    const {contractId, description} = req.body;
+    const query = "UPDATE contract SET description = $1 WHERE id = $2";
+    await pool?.query(query, [description, contractId]);
+    res.status(200).json({message: 'Description changed successfully'});
+})
 
 app.post('/upload', upload.single('file'), async (req, res) => {
     const chatId = req?.query?.chatId;

@@ -328,7 +328,7 @@ app.get('/contract', async (req, res) => {
 })
 
 app.get('/contracts', async (req, res) => {
-    const query = "SELECT c.id, c.telegram_id, c.full_name, c.address, c.subject, c.phone, c.passport, c.joined_at, c.status, c.description FROM contract c";
+    const query = "SELECT c.id, c.telegram_id, c.full_name, c.address, c.subject, c.phone, c.passport, c.joined_at, c.status, c.description FROM contract c ORDER BY c.id DESC";
     const result = await pool?.query(query);
     if (result.rowCount > 0) {
         res.status(200).json(result.rows);
@@ -375,13 +375,13 @@ app.post('/upload', upload.single('file'), async (req, res) => {
 
         const caption = `
 ID: ${chatId}
-Contract ID: ${id}
-Full Name: ${full_name}
-Address: ${address}
-Subject: #${subject}
-Phone: ${phone}
+Shartnoma raqami: ${id}
+F.I.SH: ${full_name}
+Manzil: ${address}
+Kurs: #${subject}
+Telefon raqam: ${phone}
 Passport: ${passport}
-Joined At: ${joined_at}
+Sana: ${joined_at}
 `;
 
         const sendToChat = (id) => {
@@ -396,7 +396,10 @@ Joined At: ${joined_at}
         };
 
         // Barcha chatlarga yuborish
-        Promise.all([sendToChat(chatId), sendToChat(groupId)])
+        Promise.all([
+            sendToChat(chatId),
+            // sendToChat(groupId)
+        ])
             .then(responses => {
                 console.log('Telegramga yuborildi:', responses.map(r => r.data));
                 res.send('PDF fayl muvaffaqiyatli yuborildi.');

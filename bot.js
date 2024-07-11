@@ -304,7 +304,7 @@ app.post('/contract', async (req, res) => {
         bot.sendMessage(chatId, "Sizning arizangiz qabul qilindi.\n" +
             "Ariza ma'lumotlari: \n" +
             "Shartnoma raqami: " + newContract.id + "\n" +
-            "F.I.O: " + fullName + "\n" +
+            "F.I.Sh: " + fullName + "\n" +
             "Manzil: " + address + "\n" +
             "Telefon raqam: " + phone + "\n" +
             "Passport: " + passport + "\n" +
@@ -376,7 +376,7 @@ app.post('/upload', upload.single('file'), async (req, res) => {
         const caption = `
 ID: ${chatId}
 Shartnoma raqami: ${id}
-F.I.SH: ${full_name}
+F.I.Sh: ${full_name}
 Manzil: ${address}
 Kurs: #${subject}
 Telefon raqam: ${phone}

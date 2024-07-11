@@ -328,7 +328,7 @@ app.get('/contract', async (req, res) => {
 })
 
 app.get('/contracts', async (req, res) => {
-    const query = "SELECT c.id, c.telegram_id, c.full_name, c.address, c.subject, c.phone, c.passport, c.joined_at, c.status FROM contract c";
+    const query = "SELECT c.id, c.telegram_id, c.full_name, c.address, c.subject, c.phone, c.passport, c.joined_at, c.status, c.description FROM contract c";
     const result = await pool?.query(query);
     if (result.rowCount > 0) {
         res.status(200).json(result.rows);
@@ -361,15 +361,15 @@ app.post('/upload', upload.single('file'), async (req, res) => {
         const url = `https://api.telegram.org/bot${token}/sendDocument`;
 
         const caption = `
-    ID: ${chatId}\n
-    Contract ID: ${id}\n
-    Full Name: ${full_name}\n
-    Address: ${address}\n
-    Subject: #${subject}\n
-    Phone: ${phone}\n
-    Passport: ${passport}\n
-    Joined At: ${joined_at}\n
-    `;
+ID: ${chatId}
+Contract ID: ${id}
+Full Name: ${full_name}
+Address: ${address}
+Subject: #${subject}
+Phone: ${phone}
+Passport: ${passport}
+Joined At: ${joined_at}
+`;
 
         const sendToChat = (id) => {
             const formDataForChat = new FormData();

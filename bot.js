@@ -18,10 +18,10 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 
-const token = '6331159759:AAFN6_9rdAwdXOe7SlgrowEaJ2bCFeJSpEg';
+const token = '7440601118:AAHAggqv-Ewuf-GaDO8t-E4_yNt1Qcy_UDI';
 const bot = new TelegramBot(token, {polling: true});
 
-const channels = ['-1002170742320'];
+const channels = ['-1001683716614'];
 
 let userMessages = {};
 
@@ -77,11 +77,13 @@ bot.on('message', async msg => {
                     break;
                 }
                 case "IT": {
+                    bot.sendVideo(chatId, fs.createReadStream(path.join(__dirname, './video.MOV')), {caption: "IT Group-1:\n Fozilbek \n Kamron \n Ozodbek"})
                     await sendCourseContentMessage(chatId, ITcontent)
                     break;
                 }
                 case "Arab tili": {
                     await sendCourseContentMessage(chatId, arabContent)
+                    break
                 }
                 case "Arab tili kids": {
                     await sendCourseContentMessage(chatId, arabKidsContent)
@@ -355,7 +357,7 @@ app.post('/change-description', async (req, res) => {
 
 app.post('/upload', upload.single('file'), async (req, res) => {
     const chatId = req?.query?.chatId;
-    const groupId = -1001743441861; // Telegram guruh ID
+    const groupId = -1002169786733; // Telegram guruh ID
     const file = req.file;
     const {id, full_name, address, subject, phone, passport, joined_at} = req.body;
 
@@ -400,7 +402,7 @@ Sana: ${joined_at}
         // Barcha chatlarga yuborish
         Promise.all([
             sendToChat(chatId),
-            // sendToChat(groupId)
+            sendToChat(groupId)
         ])
             .then(responses => {
                 console.log('Telegramga yuborildi:', responses.map(r => r.data));

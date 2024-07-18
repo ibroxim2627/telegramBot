@@ -18,7 +18,7 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 
-const token = '7440601118:AAHAggqv-Ewuf-GaDO8t-E4_yNt1Qcy_UDI';
+const token = '6331159759:AAFN6_9rdAwdXOe7SlgrowEaJ2bCFeJSpEg';
 const bot = new TelegramBot(token, {polling: true});
 
 const channels = ['-1001683716614'];

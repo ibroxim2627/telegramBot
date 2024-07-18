@@ -22,6 +22,7 @@ const token = '6331159759:AAFN6_9rdAwdXOe7SlgrowEaJ2bCFeJSpEg';
 const bot = new TelegramBot(token, {polling: true});
 
 const channels = ['-1001683716614'];
+const groupId = -1002169786733;
 
 let userMessages = {};
 
@@ -34,6 +35,7 @@ bot.setMyCommands([
 bot.on('message', async msg => {
     console.log(msg);
     const chatId = msg?.chat?.id;
+    if (chatId === groupId) return;
     const text = msg?.text;
     const messageId = msg?.message_id;
     const firstName = msg?.from?.first_name;
@@ -357,7 +359,6 @@ app.post('/change-description', async (req, res) => {
 
 app.post('/upload', upload.single('file'), async (req, res) => {
     const chatId = req?.query?.chatId;
-    const groupId = -1002169786733; // Telegram guruh ID
     const file = req.file;
     const {id, full_name, address, subject, phone, passport, joined_at} = req.body;
 

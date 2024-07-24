@@ -28,7 +28,7 @@ module.exports = {
         reply_markup: {
             inline_keyboard: [
                 [
-                    {text: "Test kanal", url: 'https://t.me/+VILaQAu1NQM1YjQy'},
+                    {text: "Zukko", url: 'https://t.me/Zukko_Oquv_Markazi'},
                     {text: "Tekshirish", callback_data: '/check'},
                 ]
             ]

@@ -16,12 +16,16 @@ const {
 
 const app = express();
 app.use(bodyParser.json());
-app.use(cors());
+app.use(cors({
+    origin: '*',  // Barcha domenlar uchun ruxsat berish
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],  // Barcha HTTP usullariga ruxsat berish
+    allowedHeaders: ['Content-Type', 'Authorization']  // Kerakli sarlavhalarga ruxsat berish
+}));
 
 const token = '6331159759:AAFN6_9rdAwdXOe7SlgrowEaJ2bCFeJSpEg';
 const bot = new TelegramBot(token, {polling: true});
 
-const channels = ['-1001683716614'];
+const channels = [];
 const groupId = -1002169786733;
 
 let userMessages = {};
@@ -79,7 +83,6 @@ bot.on('message', async msg => {
                     break;
                 }
                 case "IT": {
-                    bot.sendVideo(chatId, fs.createReadStream(path.join(__dirname, './video.MOV')), {caption: "IT Group-1:\n Fozilbek \n Kamron \n Ozodbek"})
                     await sendCourseContentMessage(chatId, ITcontent)
                     break;
                 }
@@ -127,7 +130,7 @@ bot.on('message', async msg => {
                 //                     inline_keyboard: groupArrayElements(result.rows.map(row => {
                 //                         return {
                 //                             text: row.id,
-                //                             web_app: {url: `https://zukko-academy-bot-web-6562e6a9fd84.herokuapp.com/document-pdf/${row.id}`}
+                //                             web_app: {url: `https://main--neon-cobbler-66eee9.netlify.app/document-pdf/${row.id}`}
                 //                         };
                 //                     }))
                 //                 })
@@ -261,13 +264,13 @@ const getContractBtn = (chatId) => {
                 [
                     {
                         text: "Shartnoma shartlari",
-                        web_app: {url: "https://zukko-academy-bot-web-6562e6a9fd84.herokuapp.com/conditions"}
+                        web_app: {url: "https://main--neon-cobbler-66eee9.netlify.app/conditions"}
                     },
                 ],
                 [
                     {
                         text: "Shartnoma tuzishga ariza topshirish",
-                        web_app: {url: "https://zukko-academy-bot-web-6562e6a9fd84.herokuapp.com/document-form/" + chatId}
+                        web_app: {url: "https://main--neon-cobbler-66eee9.netlify.app/document-form/" + chatId}
                     },
                 ],
                 // [
@@ -295,10 +298,11 @@ app.get('/', (req, res) => {
 
 app.post('/contract', async (req, res) => {
     try {
-        const {chatId, fullName, address, phone, subject, signature, passport} = req.body;
-        const query = "INSERT INTO contract (telegram_id, full_name, address, subject, phone, signature, passport) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *";
 
-        let newContract = await pool.query(query, [chatId, fullName, address, subject, phone, signature, passport]);
+        const {chatId, fullName, birthday, responsiblePersonName, address, phone, subject, signature, passport} = req.body;
+        const query = "INSERT INTO contract (telegram_id, full_name, birthday, responsible_person_name, address, subject, phone, signature, passport) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *";
+
+        let newContract = await pool.query(query, [chatId, fullName, birthday, responsiblePersonName, address, subject, phone, signature, passport]);
         newContract = newContract.rows[0];
         res.status(200).json({message: 'Contract saved successfully'});
 
@@ -317,7 +321,7 @@ app.post('/contract', async (req, res) => {
         )
     } catch (err) {
         console.error(err);
-        res.status(500).json({message: 'Error saving contract'});
+        res.status(500).json({message: err});
     }
 });
 
@@ -333,7 +337,7 @@ app.get('/contract', async (req, res) => {
 })
 
 app.get('/contracts', async (req, res) => {
-    const query = "SELECT c.id, c.telegram_id, c.full_name, c.address, c.subject, c.phone, c.passport, c.joined_at, c.status, c.description FROM contract c ORDER BY c.id DESC";
+    const query = "SELECT c.id, c.telegram_id, c.full_name, c.birthday, c.responsible_person_name, c.address, c.subject, c.phone, c.passport, c.joined_at, c.status, c.description FROM contract c ORDER BY c.id DESC";
     const result = await pool?.query(query);
     if (result.rowCount > 0) {
         res.status(200).json(result.rows);
@@ -419,7 +423,7 @@ Sana: ${joined_at}
     }
 });
 
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });

@@ -298,7 +298,6 @@ app.get('/', (req, res) => {
 
 app.post('/contract', async (req, res) => {
     try {
-        console.log(req);
         const {chatId, fullName, birthday, responsiblePersonName, address, phone, subject, signature, passport} = req.body;
         const query = "INSERT INTO contract (telegram_id, full_name, birthday, responsible_person_name, address, subject, phone, signature, passport) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *";
         let newContract = await pool.query(query, [chatId, fullName, birthday, responsiblePersonName, address, subject, phone, signature, passport]);

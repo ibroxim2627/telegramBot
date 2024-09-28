@@ -25,7 +25,7 @@ app.use(cors({
 const token = '6331159759:AAFN6_9rdAwdXOe7SlgrowEaJ2bCFeJSpEg';
 const bot = new TelegramBot(token, {polling: true});
 
-const channels = [];
+const channels = ['-1002170742320'];
 const groupId = -1002169786733;
 
 let userMessages = {};

@@ -15,7 +15,7 @@ const {
 } = require("./botOptions");
 
 const app = express();
-app.use(bodyParser.json());
+app.use(express.json());
 app.use(cors({
     origin: '*',  // Barcha domenlar uchun ruxsat berish
     methods: ['GET', 'POST', 'PUT', 'DELETE'],  // Barcha HTTP usullariga ruxsat berish

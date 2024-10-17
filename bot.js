@@ -52,9 +52,29 @@ bot.on('message', async msg => {
         if (result.rowCount > 0) {
             if (await checkJoinChannels(chatId, userId)) {
                 await bot.sendMessage(chatId, `Salom ${result.rows[0].first_name}, o'zingizga menyudan kerakli bo'limni tanlang`, startBtn)
+                    .then(() => {
+                        console.log('Message successfully sent');
+                    })
+                    .catch((error) => {
+                        if (error.response && error.response.statusCode === 403) {
+                            console.log(`Bot foydalanuvchi:${userId} tomonidan bloklangan`);
+                        } else {
+                            console.log('Xatolik yuz berdi:', error);
+                        }
+                    })
             }
         } else {
             await bot.sendMessage(chatId, "Salom " + firstName + "\n Iltimos telefon raqamingizni yuboring", getPhoneBtn)
+                .then(() => {
+                    console.log('Message successfully sent');
+                })
+                .catch((error) => {
+                    if (error.response && error.response.statusCode === 403) {
+                        console.log(`Bot foydalanuvchi:${userId} tomonidan bloklangan`);
+                    } else {
+                        console.log('Xatolik yuz berdi:', error);
+                    }
+                })
             if (!userMessages[chatId]) {
                 userMessages[chatId] = [];
             }
@@ -64,10 +84,30 @@ bot.on('message', async msg => {
             switch (text) {
                 case '📚 Kurslar': {
                     await bot.sendMessage(chatId, "Ma'lumot olmoqchi bo'lgan kursni tanlang", coursesBtn)
+                        .then(() => {
+                            console.log('Message successfully sent');
+                        })
+                        .catch((error) => {
+                            if (error.response && error.response.statusCode === 403) {
+                                console.log(`Bot foydalanuvchi:${userId} tomonidan bloklangan`);
+                            } else {
+                                console.log('Xatolik yuz berdi:', error);
+                            }
+                        })
                     break
                 }
                 case "Orqaga": {
                     await bot.sendMessage(chatId, "Menyudan kerakli bo'limni tanlang", startBtn)
+                        .then(() => {
+                            console.log('Message successfully sent');
+                        })
+                        .catch((error) => {
+                            if (error.response && error.response.statusCode === 403) {
+                                console.log(`Bot foydalanuvchi:${userId} tomonidan bloklangan`);
+                            } else {
+                                console.log('Xatolik yuz berdi:', error);
+                            }
+                        })
                     break
                 }
                 case "Matematika": {
@@ -99,10 +139,30 @@ bot.on('message', async msg => {
                         "📞+99895-960-55-66\n" +
                         "📞+99895-970-55-66\n" +
                         "👉@Zukko_Oquv_Markazi", contactBtn)
+                        .then(() => {
+                            console.log('Message successfully sent');
+                        })
+                        .catch((error) => {
+                            if (error.response && error.response.statusCode === 403) {
+                                console.log(`Bot foydalanuvchi:${userId} tomonidan bloklangan`);
+                            } else {
+                                console.log('Xatolik yuz berdi:', error);
+                            }
+                        })
                     break
                 }
                 case "📃 Shartnoma": {
                     await bot.sendMessage(chatId, "O'zingizga kerakli bo'limni tanlang", getContractBtn(chatId))
+                        .then(() => {
+                            console.log('Message successfully sent');
+                        })
+                        .catch((error) => {
+                            if (error.response && error.response.statusCode === 403) {
+                                console.log(`Bot foydalanuvchi:${userId} tomonidan bloklangan`);
+                            } else {
+                                console.log('Xatolik yuz berdi:', error);
+                            }
+                        })
                     break
                 }
                 // case "Mening shartnomalarim": {
@@ -143,6 +203,16 @@ bot.on('message', async msg => {
                 // }
                 default: {
                     await bot.sendMessage(chatId, "Kechirasiz siz mavjud bo'lmagan buyruq kiritmoqdasiz")
+                        .then(() => {
+                            console.log('Message successfully sent');
+                        })
+                        .catch((error) => {
+                            if (error.response && error.response.statusCode === 403) {
+                                console.log(`Bot foydalanuvchi:${userId} tomonidan bloklangan`);
+                            } else {
+                                console.log('Xatolik yuz berdi:', error);
+                            }
+                        })
                 }
             }
         }
@@ -164,6 +234,17 @@ bot.on('contact', async (msg) => {
         } catch (err) {
             console.log(err)
             const message = await bot.sendMessage(chatId, "Ma'lumotlarni saqlashda xatolik yuz berdi\n" + err)
+                .then(() => {
+                    console.log('Message successfully sent');
+                })
+                .catch((error) => {
+                    if (error.response && error.response.statusCode === 403) {
+                        console.log(`Bot foydalanuvchi:${userId} tomonidan bloklangan`);
+                    } else {
+                        console.log('Xatolik yuz berdi:', error);
+                    }
+                })
+
             userMessages[chatId] = [...(userMessages[chatId] || []), message.message_id];
         }
     }
@@ -214,7 +295,17 @@ const checkJoinChannels = async (chatId, userId, start = false, messageId = null
     if (isMemberOfAllChannels) {
         try {
             if (start) {
-                await bot.sendMessage(chatId, 'Rahmat! Siz barcha kanallarga ulangan ekansiz.', startBtn);
+                await bot.sendMessage(chatId, 'Rahmat! Siz barcha kanallarga ulangan ekansiz.', startBtn)
+                    .then(() => {
+                        console.log('Message successfully sent');
+                    })
+                    .catch((error) => {
+                        if (error.response && error.response.statusCode === 403) {
+                            console.log(`Bot foydalanuvchi:${userId} tomonidan bloklangan`);
+                        } else {
+                            console.log('Xatolik yuz berdi:', error);
+                        }
+                    })
                 delete userMessages[chatId]
             }
         } catch (err) {
@@ -224,21 +315,51 @@ const checkJoinChannels = async (chatId, userId, start = false, messageId = null
         if (!start && !userMessages[chatId]) userMessages[chatId] = []
         if (messageId) {
             try {
-                const message = await bot.sendMessage(chatId, "Siz, barcha kanallarga a'zo bo'lmagansiz! iltimos, a'zo bo'lib qayta urinib ko'ring", {reply_markup: {remove_keyboard: true}});
+                const message = await bot.sendMessage(chatId, "Siz, barcha kanallarga a'zo bo'lmagansiz! iltimos, a'zo bo'lib qayta urinib ko'ring", {reply_markup: {remove_keyboard: true}})
+                    .then(() => {
+                        console.log('Message successfully sent');
+                    })
+                    .catch((error) => {
+                        if (error.response && error.response.statusCode === 403) {
+                            console.log(`Bot foydalanuvchi:${userId} tomonidan bloklangan`);
+                        } else {
+                            console.log('Xatolik yuz berdi:', error);
+                        }
+                    })
                 userMessages[chatId].push(message.message_id);
             } catch (err) {
                 console.error(err);
             }
         } else {
             try {
-                const message = await bot.sendMessage(chatId, 'Iltimos, ushbu kanallarga ulaning va tekshirish tugmasini bosing.', {reply_markup: {remove_keyboard: true}});
+                const message = await bot.sendMessage(chatId, 'Iltimos, ushbu kanallarga ulaning va tekshirish tugmasini bosing.', {reply_markup: {remove_keyboard: true}})
+                    .then(() => {
+                        console.log('Message successfully sent');
+                    })
+                    .catch((error) => {
+                        if (error.response && error.response.statusCode === 403) {
+                            console.log(`Bot foydalanuvchi:${userId} tomonidan bloklangan`);
+                        } else {
+                            console.log('Xatolik yuz berdi:', error);
+                        }
+                    })
                 userMessages[chatId].push(message.message_id);
             } catch (err) {
                 console.error(err);
             }
         }
         try {
-            const message = await bot.sendMessage(chatId, 'Quyidagi kanallarga ulaning:', channelsBtn);
+            const message = await bot.sendMessage(chatId, 'Quyidagi kanallarga ulaning:', channelsBtn)
+                .then(() => {
+                    console.log('Message successfully sent');
+                })
+                .catch((error) => {
+                    if (error.response && error.response.statusCode === 403) {
+                        console.log(`Bot foydalanuvchi:${userId} tomonidan bloklangan`);
+                    } else {
+                        console.log('Xatolik yuz berdi:', error);
+                    }
+                })
             userMessages[chatId].push(message.message_id);
         } catch (err) {
             console.error(err);
@@ -249,10 +370,28 @@ const checkJoinChannels = async (chatId, userId, start = false, messageId = null
 
 const sendCourseContentMessage = async (chatId, courseContent) => {
     const message = await bot.sendMessage(chatId, "... ✍️")
+        .then(() => {
+            console.log('Message successfully sent');
+        })
+        .catch((error) => {
+            if (error.response && error.response.statusCode === 403) {
+                console.log(`Bot foydalanuvchi tomonidan bloklangan`);
+            } else {
+                console.log('Xatolik yuz berdi:', error);
+            }
+        })
     const photoPath = path.join(__dirname, './Zakiy.jpg');
     await bot.sendPhoto(chatId, photoPath, {...courseContent, ...infoContentBtn})
         .then(() => {
             bot.deleteMessage(chatId, message.message_id)
+            console.log('Message successfully sent');
+        })
+        .catch((error) => {
+            if (error.response && error.response.statusCode === 403) {
+                console.log(`Bot foydalanuvchi tomonidan bloklangan`);
+            } else {
+                console.log('Xatolik yuz berdi:', error);
+            }
         })
 }
 
@@ -298,7 +437,17 @@ app.get('/', (req, res) => {
 
 app.post('/contract', async (req, res) => {
     try {
-        const {chatId, fullName, birthday, responsiblePersonName, address, phone, subject, signature, passport} = req.body;
+        const {
+            chatId,
+            fullName,
+            birthday,
+            responsiblePersonName,
+            address,
+            phone,
+            subject,
+            signature,
+            passport
+        } = req.body;
         const query = "INSERT INTO contract (telegram_id, full_name, birthday, responsible_person_name, address, subject, phone, signature, passport) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *";
         let newContract = await pool.query(query, [chatId, fullName, birthday, responsiblePersonName, address, subject, phone, signature, passport]);
         newContract = newContract.rows[0];
@@ -317,6 +466,16 @@ app.post('/contract', async (req, res) => {
             "Sana: " + formattedDate + "\n" +
             "Arizangiz tasdiqlanishi bilan shartnoma namunasini sizga yuboramiz.\n"
         )
+            .then(() => {
+                console.log('Message successfully sent');
+            })
+            .catch((error) => {
+                if (error.response && error.response.statusCode === 403) {
+                    console.log(`Bot foydalanuvchi tomonidan bloklangan`);
+                } else {
+                    console.log('Xatolik yuz berdi:', error);
+                }
+            })
     } catch (err) {
         console.error(err);
         res.status(500).json({message: err});
@@ -348,7 +507,17 @@ app.post('/cancellation', async (req, res) => {
     const {contractId, description, chatId} = req.body;
     const query = "UPDATE contract SET status = false, description = $1 WHERE id = $2";
     await pool?.query(query, [description, contractId]);
-    await bot.sendMessage(chatId, `Sizning shartnoma raqami: ${contractId} bo'lgan arizangiz, ${description} sababli bekor qilindi.\nIltimos, qayta urinib ko'ring.\nSavol yoki xatolik bo'lgan bo'lsa @ZukkoAdmin ga murojaat qiling.`);
+    await bot.sendMessage(chatId, `Sizning shartnoma raqami: ${contractId} bo'lgan arizangiz, ${description} sababli bekor qilindi.\nIltimos, qayta urinib ko'ring.\nSavol yoki xatolik bo'lgan bo'lsa @ZukkoAdmin ga murojaat qiling.`)
+        .then(() => {
+            console.log('Message successfully sent');
+        })
+        .catch((error) => {
+            if (error.response && error.response.statusCode === 403) {
+                console.log(`Bot foydalanuvchi tomonidan bloklangan`);
+            } else {
+                console.log('Xatolik yuz berdi:', error);
+            }
+        })
     res.status(200).json({message: 'Contract canceled successfully'});
 })
 

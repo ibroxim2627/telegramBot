@@ -4,7 +4,7 @@ module.exports = {
             resize_keyboard: true,
             keyboard: [
                 [
-                    {text: '🌐 Website', web_app: {url: 'https://zakiy-academy.uz/'}},
+                    {text: '🌐 Ilova', web_app: {url: 'https://zukko.talimsoft.uz/p/'}},
                     {text: '📚 Kurslar'},
                 ],
                 [
